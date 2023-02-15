@@ -1,0 +1,22 @@
+{
+  "name": "sy_edi-2_websocket-based-smart-attendance-system",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sakshee15/SY_EDI-2_Websocket-based-smart-attendance-system.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/sakshee15/SY_EDI-2_Websocket-based-smart-attendance-system/issues"
+  },
+  "homepage": "https://github.com/sakshee15/SY_EDI-2_Websocket-based-smart-attendance-system#readme",
+  "dependencies": {
+    "express": "^4.18.2"
+  }
+}
