@@ -243,8 +243,6 @@ const getCourseAttendance = async (req, res) => {
     }
 }
 
-
-
 module.exports = {
     teacherRegister,
     teacherLogin,
