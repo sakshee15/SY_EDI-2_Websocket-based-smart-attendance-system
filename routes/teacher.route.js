@@ -11,6 +11,6 @@ teacherRoute.get('/get', fetchuser, getTeacher);
 teacherRoute.put('/update/:id', fetchuser, updateTeacher);
 teacherRoute.delete('/delete/:id', fetchuser, deleteTeacher);
 teacherRoute.get('/getCourses', fetchuser, getAllCourses);
-teacherRoute.get('/getCourseAttendance/:id', fetchuser, getCourseAttendance);
+teacherRoute.get('/getCourseAttendance/:name', fetchuser, getCourseAttendance);
 
 module.exports = teacherRoute;

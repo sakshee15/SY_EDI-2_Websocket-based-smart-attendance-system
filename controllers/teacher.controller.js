@@ -3,6 +3,7 @@ const Course = require('../models/course.model')
 const Student = require('../models/student.model')
 const bcrypt = require('bcrypt')
 const jwt = require('jsonwebtoken')
+const mongoose = require('mongoose');
 
 const generateToken = ({ userId }) => {
     const token = jwt.sign({ userId }, process.env.JWT_SECRET);
@@ -170,16 +171,18 @@ const getAllCourses = async (req, res) => {
 
 const getCourseAttendance = async (req, res) => {
     const userId = req.user.userId;
-    const courseId = req.params.id;
+    const courseName = req.params.name
     if (!userId) {
         return res.status(404).json({ error: "User not authenticated!" });
     }
     try {
+        
         const user = await Teacher.findOne({ _id: userId })
         if (!user) {
             return res.status(404).json({ error: "User not found!" });
         }
-        const course = await Course.findOne({ _id: courseId })
+
+        const course = await Course.findOne({course_name: courseName })
         if(!course){
             return res.status(404).json({ error: "Course not found!"})
         }
@@ -188,23 +191,53 @@ const getCourseAttendance = async (req, res) => {
         //     return res.status(404).json({ error: "User cannot view the attendance for the course!" })
         // }
 
-        const data = await Student.find({ "attendance.course_id": courseId })
+        // const data = await Student.find({ "attendance.course_id": courseId })
+        // const attend = data.map(student => {
+        //     const studentAttendance = student.attendance.find(a => a.course_id.toString() === courseId);
+        //     return {
+        //     student_name: student.name,
+        //     PRN: student.PRN_no,
+        //     present_or_not: studentAttendance.present_or_not,
+        //     date: studentAttendance.dateTime
+        //     };
+        //     });
 
-        const attendance = data.map(function (a) {
-            return {
-                student_name: a.name,
-                PRN: a.PRN_no,
-                present_or_not: a.attendance.present_or_not,
-                date: a.dateTime
-            };
-        });
+        // console.log(attend);
+        // return res.status(200).json({
+        //     message: "Success!",
+        //     count: data.length,
+        //     details: attend,
+        // })
 
-        console.log(attendance);
-        return res.status(200).json({
+        const attendance = await Student.aggregate([
+            // Join the Student and Course collections on the course_id field
+            { $lookup: {
+                from: "courses",
+                localField: "attendance.course_id",
+                foreignField: "_id",
+                as: "course"
+            }},
+            // Filter the attendance records by course ID
+            { $match: { "course._id": new mongoose.Types.ObjectId(course._id) }},
+            // Flatten the attendance array to return one document per attendance record
+            { $unwind: "$attendance" },
+            // Filter out attendance records that don't match the course ID
+            { $match: { "attendance.course_id": new mongoose.Types.ObjectId(course._id) }},
+            // Project the desired fields for the attendance record
+            { $project: {
+                _id: 0,
+                student_name: "$name",
+                PRN: "$PRN_no",
+                present_or_not: "$attendance.present_or_not",
+                date: "$attendance.dateTime"
+            }}
+          ]);
+          
+          return res.status(200).json({
             message: "Success!",
-            count: data.length,
+            count: attendance.length,
             details: attendance,
-        })
+          });
     } catch (err) {
         return res.status(500).json({ error: "Something went wrong" + err.message });
     }
