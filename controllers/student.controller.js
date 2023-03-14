@@ -10,8 +10,8 @@ const generateToken = ({ userId }) => {
 };
 
 const studentRegister = async (req, res) => {
-    const { name, email, phoneNumber, PRN_no} = req.body;
-    if (!name || !email || !phoneNumber || !PRN_no) {
+    const { name, email, phoneNumber, PRN_no,fingerPrint_id} = req.body;
+    if (!name || !email || !phoneNumber || !PRN_no ||!fingerPrint_id) {
         return res.status(404).json({ error: "Missing fields!!" })
     }
 
@@ -33,14 +33,15 @@ const studentRegister = async (req, res) => {
             phoneNumber: phoneNumber,
             PRN_no: PRN_no,
             password: hashed_password,
+            FingerPrint_ID: fingerPrint_id
         })
 
-        student.courses_enrolled.push('640e8834c4298bbd1fc89229');
+        student.courses_enrolled.push('640e8834c4298bbd1fc89229','640e8841c4298bbd1fc8922c','640e884bc4298bbd1fc8922f');
         student.save();
-        student.courses_enrolled.push('640e8841c4298bbd1fc8922c');
-        student.save();
-        student.courses_enrolled.push('640e884bc4298bbd1fc8922f');
-        student.save();
+        // student.courses_enrolled.push('640e8841c4298bbd1fc8922c');
+        // student.save();
+        // student.courses_enrolled.push('640e884bc4298bbd1fc8922f');
+        //student.save();
         return res.status(200).json({ message: "User registered successfully" })
 
     } catch (err) {
@@ -215,6 +216,35 @@ const registerCourse = async(req,res) => {
 }
 }
 
+const processMessage = async(req,res) => {
+      try {
+        const courseId = req.params.id
+        const data = req.params.data
+        const now = new Date()
+        const user = await Student.findOne({ FingerPrint_ID: data });
+        // console.log(user, "User found")
+        if (!user) {
+          return res.send("User not found!!")
+          //return res.status(200).json({message:"User registered with the website"})
+        }
+        console.log("User recieved message")
+        const result = await Student.findByIdAndUpdate({ _id: user._id }, {
+          $push: {
+            attendance: {
+              course_id: courseId,
+              dateTime:Date.now(),
+              present_or_not: 1,
+            },
+          }
+        }, { new: true })
+        console.log("error")
+        return res.status(200).send("Attendance of for IOT theory is marked ")
+      
+      } catch (err) {
+       return res.status(500).send("Something wrong occured")// rejecting the Promise with the error
+      }
+    }
+
 
 module.exports = {
     studentRegister,
@@ -224,6 +254,7 @@ module.exports = {
     deleteStudent,
     getCoursesEnrolled,
     getCourseAttendance,
-    registerCourse
+    registerCourse,
+    processMessage
 
 }
