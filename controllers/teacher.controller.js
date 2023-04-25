@@ -187,6 +187,28 @@ const getCourseAttendance = async (req, res) => {
             return res.status(404).json({ error: "Course not found!"})
         }
 
+        // // if(course.teacher_id !== user._id){
+        //     return res.status(404).json({ error: "User cannot view the attendance for the course!" })
+        // }
+
+        // const data = await Student.find({ "attendance.course_id": courseId })
+        // const attend = data.map(student => {
+        //     const studentAttendance = student.attendance.find(a => a.course_id.toString() === courseId);
+        //     return {
+        //     student_name: student.name,
+        //     PRN: student.PRN_no,
+        //     present_or_not: studentAttendance.present_or_not,
+        //     date: studentAttendance.dateTime
+        //     };
+        //     });
+
+        // console.log(attend);
+        // return res.status(200).json({
+        //     message: "Success!",
+        //     count: data.length,
+        //     details: attend,
+        // })
+
         const attendance = await Student.aggregate([
             // Join the Student and Course collections on the course_id field
             { $lookup: {
@@ -225,8 +247,6 @@ const getCourseAttendance = async (req, res) => {
         return res.status(500).json({ error: "Something went wrong" + err.message });
     }
 }
-
-
 
 module.exports = {
     teacherRegister,
