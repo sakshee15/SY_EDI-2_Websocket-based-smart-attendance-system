@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import Show2 from './Show2';
-import data2 from './data2';
+
 
 function Student() {
   const [value, setValue] = useState("");
@@ -15,7 +14,7 @@ function Student() {
   function onChange(e) {
     const selectedOption = e.target.value;
     settr([])
-    console.log(response)
+    
     const selectedCourse = response.courses_enrolled.find(course => course.course_name === selectedOption);
     
     if (selectedCourse) {
@@ -32,7 +31,7 @@ function Student() {
         };
   
         try {
-          console.log(selectedOption)
+          
           var res = await axios.get(`http://localhost:5000/student/getCourseAttendance/${selectedOption}`, config);
           console.log("res data first useefect :",res.data.data)
           setResponse2(res.data);
@@ -87,7 +86,7 @@ function Student() {
   }, [response2]);
 
   useEffect(() => {
-    console.log(response)
+    
     if (response.courses_enrolled && response.courses_enrolled.length > 0) {
       const options = response.courses_enrolled.map((course) => (
         <option key={course._id} value={course.course_name}>

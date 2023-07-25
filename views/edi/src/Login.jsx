@@ -1,5 +1,5 @@
 import React ,{useState}from 'react';
-// import data from './data';
+
 import axios from 'axios'
 import {Link} from 'react-router-dom'
 import { useNavigate } from "react-router-dom";
@@ -33,7 +33,6 @@ function Login(){
             body,
             config
           );
-          console.log(response.body);
          
           if (response.status === 400) {
             window.alert(response.data.error)
